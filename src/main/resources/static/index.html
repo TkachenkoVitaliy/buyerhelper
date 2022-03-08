@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>stageOne</title>
+</head>
+<body>
+<h2>
+    stageOneBegin
+</h2>
+
+<form action="/uploadFiles" method="post" enctype="multipart/form-data">
+
+    <div>
+        <label>Файл ММК (oracle)</label>
+        <input type="file" accept=".xlsx, .xls" id="mmkOracle" name="mmkOracle" required>
+    </div>
+
+    <div>
+        <label>Зависимости ММК</label>
+        <input type="file" accept=".xlsx, .xls" id="mmkDependencies" name="mmkDependencies" required>
+    </div>
+
+    <div>
+        <label>Файл Прочие заводы</label>
+        <input type="file" accept=".xlsx, .xls" id="otherFactory" name="otherFactory" required>
+    </div>
+    <div>
+        <button>SEND</button>
+    </div>
+
+</form>
+
+<div> </div>
+<div> </div>
+<div> </div>
+<img src="https://www.codewars.com/users/TkachenkoVitaliy/badges/large">
+
+<form action="/uploadAccept" method="post" enctype="multipart/form-data">
+    <div>
+        <label>Акцепт ММК</label>
+        <input type="file" accept=".xlsx, .xls" id="mmkAccept" name="mmkAccept" required>
+    </div>
+
+    <div>
+        <button>SEND</button>
+    </div>
+</form>
+
+
+</body>
+</html>
