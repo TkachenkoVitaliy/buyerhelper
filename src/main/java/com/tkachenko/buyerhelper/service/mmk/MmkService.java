@@ -19,13 +19,14 @@ import java.nio.file.Paths;
 @Service
 public class MmkService {
 
-    private final Path mmkToOtherFactorySettings;
     private final String settingsFileName = "mmkToOtherFactorySetting.xlsx";
+    private final Path mmkToOtherFactorySettings = Paths.get("./src/data").resolve(settingsFileName);
     private final String newSheetName = "OracleNewPage";
     private final int settingsOracleHeaderIndex = 2;
     private final int settingPasteCellIndex = 1;
     private final int settingFactoryHeaderIndex = 0;
 
+    private final String priceHeader = "Цена";
     private final String factoryValue = "MMK";
     private final int yearValue = 2022;
     private final String factoryHeader = "Поставщик";
@@ -33,11 +34,11 @@ public class MmkService {
     private int factoryColIndex = -1;
     private int yearColIndex = -1;
 
-    @Autowired
-    public MmkService(FileStorageProperties fileStorageProperties) {
-        this.mmkToOtherFactorySettings = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize()
-                .resolve(settingsFileName);
-    }
+//    @Autowired
+//    public MmkService(FileStorageProperties fileStorageProperties) {
+//        this.mmkToOtherFactorySettings = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize()
+//                .resolve(settingsFileName);
+//    }
 
     public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath) {
         try {
@@ -82,6 +83,9 @@ public class MmkService {
                         Cell cellFrom = currentParseRow.getCell(colIndexForCopy);
                         Cell cellTo = newSheetRow.createCell(colIndexForPaste);
                         if(cellFrom != null) ExcelUtils.copyCellValueXSSF((XSSFCell) cellFrom, (XSSFCell) cellTo);
+                        if(valueForSearch.equals(priceHeader)) {
+                            cellTo.setCellValue(cellTo.getNumericCellValue() * 1.2);
+                        }
                     }
                 }
 
