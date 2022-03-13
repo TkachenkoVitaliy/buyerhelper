@@ -26,6 +26,13 @@ public class MmkService {
     private final int settingPasteCellIndex = 1;
     private final int settingFactoryHeaderIndex = 0;
 
+    private final String factoryValue = "MMK";
+    private final int yearValue = 2022;
+    private final String factoryHeader = "Поставщик";
+    private final String yearHeader = "Год акцепта";
+    private int factoryColIndex = -1;
+    private int yearColIndex = -1;
+
     @Autowired
     public MmkService(FileStorageProperties fileStorageProperties) {
         this.mmkToOtherFactorySettings = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize()
@@ -34,13 +41,15 @@ public class MmkService {
 
     public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath) {
         try {
-            FileInputStream inputStreamSettings = new FileInputStream(mmkToOtherFactorySettings.toAbsolutePath().toString());
+            FileInputStream inputStreamSettings = new FileInputStream(mmkToOtherFactorySettings.toAbsolutePath()
+                    .toString());
             FileInputStream inputStreamMmk = new FileInputStream(fileMmkOraclePath.toAbsolutePath().toString());
             XSSFWorkbook settingsWorkbook = new XSSFWorkbook(inputStreamSettings);
             XSSFWorkbook mmkWorkbook = new XSSFWorkbook(inputStreamMmk);
             XSSFSheet settingsSheet = settingsWorkbook.getSheetAt(0);
             XSSFSheet mmkOracleSheet = mmkWorkbook.getSheetAt(0);
             XSSFSheet mmkNewSheet = mmkWorkbook.createSheet(newSheetName);
+
             int settingLastRowIndex = settingsSheet.getLastRowNum();
             Row rowNewSheetHeader = mmkNewSheet.createRow(0);
 
@@ -48,6 +57,12 @@ public class MmkService {
                 Cell cellFrom = settingsSheet.getRow(i).getCell(settingFactoryHeaderIndex);
                 Cell cellTo = rowNewSheetHeader.createCell(i+1);
                 ExcelUtils.copyCellValueXSSF((XSSFCell) cellFrom, (XSSFCell) cellTo);
+                if(cellFrom.getStringCellValue().equals(factoryHeader)) {
+                    factoryColIndex = i + 1;
+                }
+                if(cellFrom.getStringCellValue().equals(yearHeader)) {
+                    yearColIndex = i + 1;
+                };
             }
 
             int firstParseRowMmkIndex = mmkOracleSheet.getFirstRowNum()+1;
@@ -68,6 +83,13 @@ public class MmkService {
                         Cell cellTo = newSheetRow.createCell(colIndexForPaste);
                         if(cellFrom != null) ExcelUtils.copyCellValueXSSF((XSSFCell) cellFrom, (XSSFCell) cellTo);
                     }
+                }
+
+                if (factoryColIndex >= 0) {
+                    newSheetRow.createCell(factoryColIndex).setCellValue(factoryValue);
+                }
+                if (yearColIndex >= 0) {
+                    newSheetRow.createCell(yearColIndex).setCellValue(yearValue);
                 }
             }
 

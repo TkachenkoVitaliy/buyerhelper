@@ -48,7 +48,7 @@ public class FileStorageService {
                               MultipartFile fileMmkDependencies,
                               MultipartFile fileOtherFactory) {
 
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        GregorianCalendar currentDateAndTime = new GregorianCalendar();
 
         String originalFileMmkOracleName = fileMmkOracle.getOriginalFilename();
         String originalFileMmkDependenciesName = fileMmkDependencies.getOriginalFilename();
@@ -58,13 +58,13 @@ public class FileStorageService {
         FileUtils.validateExcelExtension(originalFileMmkDependenciesName);
         FileUtils.validateExcelExtension(originalFileOtherFactoryName);
 
-        String yearFolder = DateUtils.getYear(gregorianCalendar);
-        String monthFolder = DateUtils.getMonth(gregorianCalendar);
-        String dayFolder = DateUtils.getDay(gregorianCalendar);
-        String timeFolder = DateUtils.getTime(gregorianCalendar);
+        String yearFolderName = DateUtils.getYear(currentDateAndTime);
+        String monthFolderName = DateUtils.getMonth(currentDateAndTime);
+        String dayFolderName = DateUtils.getDay(currentDateAndTime);
+        String timeFolderName = DateUtils.getTime(currentDateAndTime);
 
-        Path targetFolder = fileStorageLocation.resolve(yearFolder).resolve(monthFolder)
-                .resolve(dayFolder).resolve(timeFolder);
+        Path targetFolder = fileStorageLocation.resolve(yearFolderName).resolve(monthFolderName)
+                .resolve(dayFolderName).resolve(timeFolderName);
 
 
         try {
@@ -82,19 +82,19 @@ public class FileStorageService {
         try {
             Files.copy(fileMmkOracle.getInputStream(), fileMmkOraclePath, StandardCopyOption.REPLACE_EXISTING);
             fileDBService.save(originalFileMmkOracleName, fileMmkOracleName,
-                    yearFolder, monthFolder, dayFolder, timeFolder, true);
+                    yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileMmkDependencies.getInputStream(), fileMmkDependenciesPath, StandardCopyOption.REPLACE_EXISTING);
             fileDBService.save(originalFileMmkDependenciesName, fileMmkDependenciesName,
-                    yearFolder, monthFolder, dayFolder, timeFolder, true);
+                    yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileOtherFactory.getInputStream(), fileOtherFactoryPath, StandardCopyOption.REPLACE_EXISTING);
             fileDBService.save(originalFileOtherFactoryName, fileOtherFactoryName,
-                    yearFolder, monthFolder, dayFolder, timeFolder, true);
+                    yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileOtherFactory.getInputStream(), fileSummaryPath, StandardCopyOption.REPLACE_EXISTING);
             fileDBService.save("CREATED", fileSummaryName,
-                    yearFolder, monthFolder, dayFolder, timeFolder, true);
+                    yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
             excelService.refactorSummaryFile(fileSummaryPath);
 
             mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath);
