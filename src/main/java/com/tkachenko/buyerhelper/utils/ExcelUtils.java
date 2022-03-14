@@ -131,4 +131,15 @@ public class ExcelUtils {
         }
         return result;
     }
+
+    public static int findColumnByValue(Row searchableRow, String searchableValue) {
+        for (Cell cell : searchableRow) {
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                if(cell.getStringCellValue().equals(searchableValue)) {
+                    return cell.getColumnIndex();
+                }
+            }
+        }
+        return -1;
+    }
 }

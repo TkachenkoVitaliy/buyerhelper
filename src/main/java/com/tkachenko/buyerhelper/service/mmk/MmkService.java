@@ -1,6 +1,5 @@
 package com.tkachenko.buyerhelper.service.mmk;
 
-import com.tkachenko.buyerhelper.property.FileStorageProperties;
 import com.tkachenko.buyerhelper.utils.ExcelUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -8,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -40,7 +38,7 @@ public class MmkService {
 //                .resolve(settingsFileName);
 //    }
 
-    public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath) {
+    public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath, Path fileMmkAcceptLibraryPath) {
         try {
             FileInputStream inputStreamSettings = new FileInputStream(mmkToOtherFactorySettings.toAbsolutePath()
                     .toString());
@@ -106,6 +104,10 @@ public class MmkService {
             outputStreamMmk.close();
             inputStreamMmk.close();
             inputStreamSettings.close();
+
+            MmkProfileParser mmkProfileParser = new MmkProfileParser(fileMmkOraclePath, fileMmkAcceptLibraryPath);
+            mmkProfileParser.parse();
+
 
         } catch (Exception e) {
             e.printStackTrace();

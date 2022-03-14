@@ -20,6 +20,10 @@ public class ExcelService {
     private final static String secondSheetForDeleteName = "Updates History";
     private final static String acceptLibraryName = "AcceptLibrary.xlsx";
 
+    public String getAcceptLibraryName() {
+        return acceptLibraryName;
+    }
+
     public void refactorSummaryFile(Path fileSummaryPath) {
         String stringFileSummaryPath = fileSummaryPath.toString();
 

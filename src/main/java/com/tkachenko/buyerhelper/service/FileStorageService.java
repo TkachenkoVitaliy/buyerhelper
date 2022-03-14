@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 public class FileStorageService {
 
     private final Path fileStorageLocation;
+    private final Path mmkAcceptPath;
     private final String fileMmkOracleName = "MmkOracle.xlsx";
     private final String fileMmkDependenciesName = "MmkDependencies.xlsx";
     private final String fileOtherFactoryName = "OtherFactories.xlsx";
@@ -30,6 +31,8 @@ public class FileStorageService {
     private final String mmkAcceptParentDirectory = "mmkAccept";
     private final String mmkAcceptName = "mmkAccept.xlsx";
     private final String mmkAcceptRefactoredName = "mmkAcceptRefactored.xlsx";
+    private final String mmkAcceptLibraryName;
+    private final Path fileMmkAcceptLibraryPath;
     //TODO use xls or xlsx file extension
     private final String xls =".xls";
     private final String xlsx =".xlsx";
@@ -40,9 +43,14 @@ public class FileStorageService {
                                ExcelService excelService, MmkService mmkService) {
         this.fileDBService = fileDBService;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
+        this.mmkAcceptPath = fileStorageLocation.resolve(mmkAcceptParentDirectory);
         this.excelService = excelService;
         this.mmkService = mmkService;
+        this.mmkAcceptLibraryName = excelService.getAcceptLibraryName();
+        this.fileMmkAcceptLibraryPath = mmkAcceptPath.resolve(mmkAcceptLibraryName);
     }
+
+
 
     public void storeFiles (MultipartFile fileMmkOracle,
                               MultipartFile fileMmkDependencies,
@@ -97,8 +105,7 @@ public class FileStorageService {
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
             excelService.refactorSummaryFile(fileSummaryPath);
 
-            mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath);
-
+            mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath, fileMmkAcceptLibraryPath);
         } catch (IOException e) {
             //TODO сделать собственное исключение в package Exceptions (FileStorageException)
             e.printStackTrace();
@@ -110,7 +117,6 @@ public class FileStorageService {
 
         String mmkAcceptOriginalName = mmkAccept.getOriginalFilename();
         FileUtils.validateExcelExtension(mmkAcceptOriginalName);
-        Path mmkAcceptPath = fileStorageLocation.resolve(mmkAcceptParentDirectory);
 
         try {
             Files.createDirectories(mmkAcceptPath);
