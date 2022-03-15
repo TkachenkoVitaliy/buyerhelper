@@ -41,6 +41,30 @@ public class ExcelUtils {
         }
     }
 
+    public static boolean isSamePosition (Row rowFirst, int firstRowOrderIndex, int firstRowPosIndex,
+                                          Row rowSecond, int secondRowOrderIndex, int secondRowPosIndex) {
+
+        Cell cellFirst;
+        Cell cellSecond;
+
+        cellFirst = rowFirst.getCell(firstRowOrderIndex);
+        cellSecond = rowSecond.getCell(secondRowOrderIndex);
+        if (cellFirst == null | cellSecond == null) {
+            return false;
+        }
+
+        if (cellFirst.getNumericCellValue() != cellSecond.getNumericCellValue() ) {
+            return false;
+        }
+        cellFirst = rowFirst.getCell(firstRowPosIndex);
+        cellSecond = rowSecond.getCell(secondRowPosIndex);
+        if (cellFirst.getNumericCellValue() != cellSecond.getNumericCellValue() ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public static boolean isRowEmpty (Row row) {
         for (int c = row.getFirstCellNum(); c < row.getLastCellNum(); c++) {
             Cell cell = row.getCell(c);
