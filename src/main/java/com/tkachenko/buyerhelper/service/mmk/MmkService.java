@@ -105,8 +105,13 @@ public class MmkService {
             inputStreamMmk.close();
             inputStreamSettings.close();
 
+            MmkAcceptMonthParser mmkAcceptMonthParser = new MmkAcceptMonthParser(fileMmkOraclePath);
+            mmkAcceptMonthParser.parseMonth();
+
             MmkProfileParser mmkProfileParser = new MmkProfileParser(fileMmkOraclePath, fileMmkAcceptLibraryPath);
             mmkProfileParser.parse();
+
+
 
 
         } catch (Exception e) {

@@ -143,6 +143,8 @@ public class MmkProfileParser {
         }
     }
 
+
+// innerMethod
     public void parseProfileForType(String productTypeValue, Row rowFrom, Cell targetCell,
                                     int firstMeasureIndex, int secondMeasureIndex, int thirdMeasureIndex,
                                     int profileIndex) {
