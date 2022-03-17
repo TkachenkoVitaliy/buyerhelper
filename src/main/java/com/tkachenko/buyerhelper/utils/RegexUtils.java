@@ -24,4 +24,16 @@ public class RegexUtils {
         return "";
     }
 
+    public static String regex (String fullLine, String firstSearchRegex) {
+        String result;
+
+        Pattern patternFirst = Pattern.compile(firstSearchRegex);
+        Matcher matcherFirst = patternFirst.matcher(fullLine);
+        if(matcherFirst.find()) {
+            result = matcherFirst.group();
+            return result;
+        }
+
+        return "";
+    }
 }

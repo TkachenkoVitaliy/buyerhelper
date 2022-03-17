@@ -48,13 +48,30 @@ public class NicheProfileParserFromOracle {
             targetCell.setCellValue(heightValue+FILLER+widthValue);
         }
 
-        if(productTypeValue.contains(ROLLED_SHEET) | productTypeValue.contains(ANGLES)) {
+        if(productTypeValue.contains(ROLLED_SHEET)) {
             final String MEASURES_REGEX = "(Размер)\\s([0-9|.]{1,4})x([0-9|.]{1,4})x([0-9|.]{1,5})";
             final String REMOVE_MEASURES_REGEX = "(Размер\\s)";
 
             String measuresValue = RegexUtils.regexWithRemove(additionalReq, MEASURES_REGEX, REMOVE_MEASURES_REGEX);
 
             targetCell.setCellValue(measuresValue);
+        }
+
+        if(productTypeValue.contains(ANGLES)) {
+            final String MEASURES_REGEX = "(Размер)\\s([0-9|.]{1,4})x([0-9|.]{1,4})x([0-9|.]{1,5})";
+            final String REMOVE_MEASURES_REGEX = "(Размер\\s)";
+            final String FIRST_MEASURE_REGEX = "(x{1}[0-9]{2,3}x{1})";
+            final String SECOND_MEASURE_REGEX = "^([0-9]{1,2})";
+            final String THIRD_MEASURE_REGEX="([0-9]{2,5})$";
+
+            String measuresValue = RegexUtils.regexWithRemove(additionalReq, MEASURES_REGEX, REMOVE_MEASURES_REGEX);
+            String firstMeasureValue = RegexUtils.regexWithRemove(measuresValue, FIRST_MEASURE_REGEX, FILLER);
+            String secondMeasureValue = RegexUtils.regex(measuresValue, SECOND_MEASURE_REGEX);
+            String thirdMeasureValue = RegexUtils.regex(measuresValue, THIRD_MEASURE_REGEX);
+
+
+            targetCell.setCellValue(firstMeasureValue+FILLER+firstMeasureValue+FILLER+secondMeasureValue+
+                    FILLER+thirdMeasureValue);
         }
 
         if(productTypeValue.contains(SPECIAL_SECTIONS) | productTypeValue.contains(U_CHANNELS) |
