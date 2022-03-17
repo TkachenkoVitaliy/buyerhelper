@@ -24,7 +24,7 @@ public class MmkProfileParser {
     private final String COIL = "Рулон";
     private final String PLATE = "Лист";
 
-    final String FILLER = "x";
+    private final String FILLER = "x";
 
     private final Path mmkOracleFile;
     private final Path mmkAcceptLibraryFile;
@@ -61,6 +61,10 @@ public class MmkProfileParser {
                         targetColumnIndex);
                 secondStageParse(mmkAcceptLibrarySheet, headerMmkOracleNewSheet, currentRow, targetColumnIndex, newOracleOrderIndex,
                         newOraclePosIndex);
+
+                NicheProfileParserFromOracle nicheProfileParserFromOracle = new NicheProfileParserFromOracle();
+                nicheProfileParserFromOracle.nicheParse(headerMmkOracleOldSheet, headerMmkOracleNewSheet,
+                        currentOldRow, currentRow);
             }
 
             FileOutputStream mmkOracleOutputStream = new FileOutputStream(mmkOracleFile.toString());
