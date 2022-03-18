@@ -8,21 +8,21 @@ import org.apache.poi.ss.usermodel.Row;
 
 public class NicheProfileParserFromOracle {
 
-    private final String ROLLED_TAPE = "Лента";
-    private final String ROLLED_SHEET = "Лист";
-    private final String ROLLED_COIL = "Рулон";
-    private final String REBARS_BAR = "Профиль арматурный"; //TODO equals - not contains!!!
-    private final String REBARS_COILS = "Профиль арматурный_моток";
-    private final String SPECIAL_SECTIONS = "Спецпрофиль";
-    private final String ANGLES = "Уголок г/к";
-    private final String U_CHANNELS = "Швеллер г/к";
-    private final String FILLER = "x";
+    private final static String ROLLED_TAPE = "Лента";
+    private final static String ROLLED_SHEET = "Лист";
+    private final static String ROLLED_COIL = "Рулон";
+    private final static String REBARS_BAR = "Профиль арматурный"; //TODO equals - not contains!!!
+    private final static String REBARS_COILS = "Профиль арматурный_моток";
+    private final static String SPECIAL_SECTIONS = "Спецпрофиль";
+    private final static String ANGLES = "Уголок г/к";
+    private final static String U_CHANNELS = "Швеллер г/к";
+    private final static String FILLER = "x";
 
-    private final String NEW_PROFILE_HEADER = "Размеры/профиль";
-    private final String OLD_HEADER_ADDITIONAL_REQ = "Тесты";
-    private final String NEW_PRODUCT_TYPE_COLUMN_NAME = "Вид продукции";
+    private final static String NEW_PROFILE_HEADER = "Размеры/профиль";
+    private final static String OLD_HEADER_ADDITIONAL_REQ = "Тесты";
+    private final static String NEW_PRODUCT_TYPE_COLUMN_NAME = "Вид продукции";
 
-    public void nicheParse (Row oldHeader, Row newHeader, Row oldRow, Row newRow) {
+    public static void nicheParse (Row oldHeader, Row newHeader, Row oldRow, Row newRow) {
 
         int newProfileIndex = ExcelUtils.findColIndexByStringValue(NEW_PROFILE_HEADER, newHeader);
         int oldAdditionalReqIndex = ExcelUtils.findColIndexByStringValue(OLD_HEADER_ADDITIONAL_REQ, oldHeader);

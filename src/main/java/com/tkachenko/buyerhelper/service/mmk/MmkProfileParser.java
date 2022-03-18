@@ -62,8 +62,8 @@ public class MmkProfileParser {
                 secondStageParse(mmkAcceptLibrarySheet, headerMmkOracleNewSheet, currentRow, targetColumnIndex, newOracleOrderIndex,
                         newOraclePosIndex);
 
-                NicheProfileParserFromOracle nicheProfileParserFromOracle = new NicheProfileParserFromOracle();
-                nicheProfileParserFromOracle.nicheParse(headerMmkOracleOldSheet, headerMmkOracleNewSheet,
+                //NicheProfileParserFromOracle nicheProfileParserFromOracle = new NicheProfileParserFromOracle();
+                NicheProfileParserFromOracle.nicheParse(headerMmkOracleOldSheet, headerMmkOracleNewSheet,
                         currentOldRow, currentRow);
             }
 
