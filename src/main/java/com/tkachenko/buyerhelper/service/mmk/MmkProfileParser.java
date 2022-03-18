@@ -23,6 +23,7 @@ public class MmkProfileParser {
     private final String TAPE = "Лента";
     private final String COIL = "Рулон";
     private final String PLATE = "Лист";
+    private final String REBAR_COILS = "Профиль арматурный_моток";
 
     private final String FILLER = "x";
 
@@ -59,12 +60,12 @@ public class MmkProfileParser {
                 Row currentOldRow = mmkOracleOldSheet.getRow(i);
                 firstStageParse(headerMmkOracleOldSheet, currentOldRow, headerMmkOracleNewSheet, currentRow,
                         targetColumnIndex);
-                secondStageParse(mmkAcceptLibrarySheet, headerMmkOracleNewSheet, currentRow, targetColumnIndex, newOracleOrderIndex,
-                        newOraclePosIndex);
-
-                //NicheProfileParserFromOracle nicheProfileParserFromOracle = new NicheProfileParserFromOracle();
+                secondStageParse(mmkAcceptLibrarySheet, headerMmkOracleNewSheet, currentRow, targetColumnIndex,
+                        newOracleOrderIndex, newOraclePosIndex);
                 NicheProfileParserFromOracle.nicheParse(headerMmkOracleOldSheet, headerMmkOracleNewSheet,
                         currentOldRow, currentRow);
+                NicheProfileParserFromAccept.nicheParse(mmkAcceptLibrarySheet, headerMmkOracleNewSheet, currentRow,
+                        targetColumnIndex, newOracleOrderIndex, newOraclePosIndex);
             }
 
             FileOutputStream mmkOracleOutputStream = new FileOutputStream(mmkOracleFile.toString());
@@ -149,14 +150,16 @@ public class MmkProfileParser {
 
 
 // innerMethod
-    public void parseProfileForType(String productTypeValue, Row rowFrom, Cell targetCell,
+    private void parseProfileForType(String productTypeValue, Row rowFrom, Cell targetCell,
                                     int firstMeasureIndex, int secondMeasureIndex, int thirdMeasureIndex,
                                     int profileIndex) {
 
         DataFormatter getStringValueFormatter = new DataFormatter();
         if (productTypeValue.contains(COIL) | productTypeValue.contains(TAPE)) {
 
-            if (rowFrom.getCell(firstMeasureIndex) != null && rowFrom.getCell(secondMeasureIndex) != null) {
+            if (rowFrom.getCell(firstMeasureIndex) != null && rowFrom.getCell(secondMeasureIndex) != null
+            && rowFrom.getCell(firstMeasureIndex).getCellType() !=CellType.BLANK
+                    && rowFrom.getCell(secondMeasureIndex).getCellType() != CellType.BLANK) {
                 String firstMeasureValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(firstMeasureIndex));
                 String secondMeasureValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(secondMeasureIndex));
                 targetCell.setCellValue(firstMeasureValue + FILLER + secondMeasureValue);
@@ -165,12 +168,24 @@ public class MmkProfileParser {
         } else if (productTypeValue.contains(PLATE)) {
 
             if (rowFrom.getCell(firstMeasureIndex) != null && rowFrom.getCell(secondMeasureIndex) != null
-                    && rowFrom.getCell(thirdMeasureIndex) != null) {
+                    && rowFrom.getCell(thirdMeasureIndex) != null
+                    && rowFrom.getCell(firstMeasureIndex).getCellType() != CellType.BLANK
+                    && rowFrom.getCell(secondMeasureIndex).getCellType() != CellType.BLANK
+                    && rowFrom.getCell(thirdMeasureIndex).getCellType() != CellType.BLANK) {
 
                 String firstMeasureValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(firstMeasureIndex));
                 String secondMeasureValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(secondMeasureIndex));
                 String thirdMeasureValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(thirdMeasureIndex));
                 targetCell.setCellValue(firstMeasureValue + FILLER + secondMeasureValue + FILLER + thirdMeasureValue);
+            }
+
+        } else if(productTypeValue.contains(REBAR_COILS)){
+
+            if (rowFrom.getCell(profileIndex) != null && rowFrom.getCell(profileIndex).getCellType() != CellType.BLANK) {
+
+                String profileValue = getStringValueFormatter.formatCellValue(rowFrom.getCell(profileIndex));
+                targetCell.setCellValue(profileValue + " бунт");
+
             }
 
         } else {

@@ -16,7 +16,8 @@ public class RegexUtils {
             Matcher matcherForRemove = patternForRemove.matcher(subLine);
             matcherForRemove.find();
             String subResult = matcherForRemove.replaceAll("");
-            String formattedResult = subResult.replaceAll("\\.",",");
+            String formattedResult = subResult.replaceAll("\\.",",")
+                    .replaceAll("\\|","");
 
             return formattedResult;
         }
@@ -25,13 +26,15 @@ public class RegexUtils {
     }
 
     public static String regex (String fullLine, String firstSearchRegex) {
-        String result;
+        String subResult;
 
         Pattern patternFirst = Pattern.compile(firstSearchRegex);
         Matcher matcherFirst = patternFirst.matcher(fullLine);
         if(matcherFirst.find()) {
-            result = matcherFirst.group();
-            return result;
+            subResult = matcherFirst.group();
+            String formattedResult = subResult.replaceAll("\\.",",")
+                    .replaceAll("\\|","");
+            return formattedResult;
         }
 
         return "";

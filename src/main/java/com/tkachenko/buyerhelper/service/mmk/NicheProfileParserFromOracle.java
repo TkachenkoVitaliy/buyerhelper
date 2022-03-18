@@ -3,6 +3,7 @@ package com.tkachenko.buyerhelper.service.mmk;
 import com.tkachenko.buyerhelper.utils.ExcelUtils;
 import com.tkachenko.buyerhelper.utils.RegexUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 
 
@@ -28,10 +29,12 @@ public class NicheProfileParserFromOracle {
         int oldAdditionalReqIndex = ExcelUtils.findColIndexByStringValue(OLD_HEADER_ADDITIONAL_REQ, oldHeader);
         int newProductTypeIndex = ExcelUtils.findColIndexByStringValue(NEW_PRODUCT_TYPE_COLUMN_NAME, newHeader);
 
-        if(oldRow.getCell(oldAdditionalReqIndex) == null) return;
+        if(oldRow.getCell(oldAdditionalReqIndex) == null
+                || oldRow.getCell(oldAdditionalReqIndex).getCellType() == CellType.BLANK) return;
 
         String productTypeValue = newRow.getCell(newProductTypeIndex).getStringCellValue();
         String additionalReq = oldRow.getCell(oldAdditionalReqIndex).getStringCellValue();
+        if(additionalReq=="") return;
 
         Cell targetCell = newRow.getCell(newProfileIndex);
         if(targetCell == null) newRow.createCell(newProfileIndex);
@@ -75,7 +78,7 @@ public class NicheProfileParserFromOracle {
         }
 
         if(productTypeValue.contains(SPECIAL_SECTIONS) | productTypeValue.contains(U_CHANNELS) |
-                productTypeValue.equals(REBARS_BAR)) {
+                productTypeValue.equals(REBARS_BAR) & !productTypeValue.equals(REBARS_COILS)) {
             final String PROFILE_REGEX = "(Номер профиля )([0-9УВх]{1,100})";
             final String REMOVE_PROFILE_REGEX = "(Номер профиля )";
             final String LENGTH_REGEX = "(Длина )([0-9]{1,100})";
@@ -92,7 +95,6 @@ public class NicheProfileParserFromOracle {
             final String REMOVE_PROFILE_REGEX = "(Номер профиля )";
 
             String profileValue = RegexUtils.regexWithRemove(additionalReq, PROFILE_REGEX, REMOVE_PROFILE_REGEX);
-
             targetCell.setCellValue(profileValue+" бунт");
         }
     }
