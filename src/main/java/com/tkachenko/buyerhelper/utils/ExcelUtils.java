@@ -166,4 +166,19 @@ public class ExcelUtils {
         }
         return -1;
     }
+
+    public static String getExcelColAddress(int index) {
+        String result;
+        int alphabetCount = 26;
+        int forCalculate = index + 1;
+        char baseChar = 'A' - 1;
+        char postfix = (char) (baseChar + forCalculate % alphabetCount);
+        if (forCalculate <= alphabetCount) {
+            result = "" + postfix;
+        } else {
+            char prefix = (char) (baseChar + forCalculate/alphabetCount);
+            result = ""+prefix+postfix;
+        }
+        return result;
+    }
 }

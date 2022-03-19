@@ -70,12 +70,6 @@ public class NicheProfileParserFromAccept {
                         String secondMeasureValue = RegexUtils.regexWithRemove(additionalReq,
                                 SECOND_MEASURE_REGEX, REMOVE_SECOND_MEASURE_REGEX);
 
-                        //TODO REMOVE SOUT
-                        if(targetCell.getRowIndex() == 19) {
-                            System.out.println(lengthValue);
-                            System.out.println(lengthHeaderAcceptIndex);
-                        }
-
                         targetCell.setCellValue(firstMeasureValue+FILLER+firstMeasureValue+FILLER+secondMeasureValue+
                                 FILLER+lengthValue);
                     }

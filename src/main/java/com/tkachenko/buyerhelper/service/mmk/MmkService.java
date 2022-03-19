@@ -111,8 +111,8 @@ public class MmkService {
             MmkProfileParser mmkProfileParser = new MmkProfileParser(fileMmkOraclePath, fileMmkAcceptLibraryPath);
             mmkProfileParser.parse();
 
-
-
+            MmkFormulasSetter mmkFormulasSetter = new MmkFormulasSetter(fileMmkOraclePath);
+            mmkFormulasSetter.setFormulas();
 
         } catch (Exception e) {
             e.printStackTrace();
