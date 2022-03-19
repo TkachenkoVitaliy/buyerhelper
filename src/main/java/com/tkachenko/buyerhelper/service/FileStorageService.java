@@ -105,7 +105,7 @@ public class FileStorageService {
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
             excelService.refactorSummaryFile(fileSummaryPath);
 
-            mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath, fileMmkAcceptLibraryPath);
+            mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath, fileMmkAcceptLibraryPath, fileMmkDependenciesPath);
         } catch (IOException e) {
             //TODO сделать собственное исключение в package Exceptions (FileStorageException)
             e.printStackTrace();

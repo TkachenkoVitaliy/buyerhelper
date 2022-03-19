@@ -38,7 +38,8 @@ public class MmkService {
 //                .resolve(settingsFileName);
 //    }
 
-    public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath, Path fileMmkAcceptLibraryPath) {
+    public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath, Path fileMmkAcceptLibraryPath,
+                                             Path fileMmkDependenciesPath) {
         try {
             FileInputStream inputStreamSettings = new FileInputStream(mmkToOtherFactorySettings.toAbsolutePath()
                     .toString());
@@ -113,6 +114,10 @@ public class MmkService {
 
             MmkFormulasSetter mmkFormulasSetter = new MmkFormulasSetter(fileMmkOraclePath);
             mmkFormulasSetter.setFormulas();
+
+            MmkBranchSellTypeAndClientSetter mmkBranchSellTypeAndClientSetter =
+                    new MmkBranchSellTypeAndClientSetter(fileMmkOraclePath, fileMmkDependenciesPath);
+            mmkBranchSellTypeAndClientSetter.setBranchSellTypeAndClient();
 
         } catch (Exception e) {
             e.printStackTrace();
