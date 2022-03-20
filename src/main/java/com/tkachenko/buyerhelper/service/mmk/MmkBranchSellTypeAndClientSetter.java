@@ -23,6 +23,7 @@ public class MmkBranchSellTypeAndClientSetter {
     private final String BRANCH_HEADER_COL_NAME = "База";
     private final String SELL_TYPE_HEADER_COL_NAME= "Вид поставки";
     private final String CLIENT_HEADER_COL_NAME = "Транзитн. Клиент";
+    private final String STATION_HEADER_COL_NAME = "Станция";
 
     public MmkBranchSellTypeAndClientSetter(Path fileMmkOraclePath, Path fileMmkDependenciesPath) {
         this.fileMmkOraclePath = fileMmkOraclePath;
@@ -33,6 +34,8 @@ public class MmkBranchSellTypeAndClientSetter {
         try {
             FileInputStream oracleInputStream = new FileInputStream(fileMmkOraclePath.toString());
             XSSFWorkbook oracleWorkbook = new XSSFWorkbook(oracleInputStream);
+            XSSFSheet oldOracleSheet = oracleWorkbook.getSheetAt(0);
+            Row oldOracleHeader = oldOracleSheet.getRow(oldOracleSheet.getFirstRowNum());
             XSSFSheet oracleSheet = oracleWorkbook.getSheet(ORACLE_SHEET_NAME);
             Row oracleHeader = oracleSheet.getRow(oracleSheet.getFirstRowNum());
             int firstRowNum = oracleSheet.getFirstRowNum() + 1;
@@ -45,6 +48,7 @@ public class MmkBranchSellTypeAndClientSetter {
             int oracleBranchColIndex = ExcelUtils.findColumnByValue(oracleHeader, BRANCH_HEADER_COL_NAME);
             int oracleSellTypeColIndex = ExcelUtils.findColumnByValue(oracleHeader, SELL_TYPE_HEADER_COL_NAME);
             int oracleClientColIndex = ExcelUtils.findColumnByValue(oracleHeader, CLIENT_HEADER_COL_NAME);
+            int oldOracleStationColIndex = ExcelUtils.findColumnByValue(oldOracleHeader, STATION_HEADER_COL_NAME);
 
             for (int i = firstRowNum; i <= lastRowNum; i++) {
                 Row currentOracleRow = oracleSheet.getRow(i);
@@ -52,6 +56,10 @@ public class MmkBranchSellTypeAndClientSetter {
                         oracleSellTypeColIndex, dependenciesWorkbook);
                 setFromTransits(currentOracleRow, oracleConsigneeColIndex, oracleBranchColIndex, oracleSellTypeColIndex,
                         oracleClientColIndex, dependenciesWorkbook);
+                Row currentOldOracleRow = oldOracleSheet.getRow(i);
+                setFromContainers(currentOldOracleRow, oldOracleStationColIndex, currentOracleRow,
+                        oracleConsigneeColIndex, oracleBranchColIndex, oracleSellTypeColIndex, oracleClientColIndex,
+                        dependenciesWorkbook);
 
                 //some methods
 
@@ -152,5 +160,60 @@ public class MmkBranchSellTypeAndClientSetter {
                 }
             }
         }
+    }
+
+    public void setFromContainers(Row oldOracleCurrentRow, int oldOracleStationColIndex, Row oracleCurrentRow,
+                                  int oracleConsigneeColIndex, int oracleBranchColIndex, int oracleSellTypeColIndex,
+                                  int oracleClientColIndex, XSSFWorkbook dependenciesWorkbook) {
+        final String CONTAINERS_DEP_SHEET_NAME = "Контейнеры";
+        XSSFSheet containersSheet = dependenciesWorkbook.getSheet(CONTAINERS_DEP_SHEET_NAME);
+        Row dependencyHeader = containersSheet.getRow(containersSheet.getFirstRowNum());
+        int firstDependencyRow = containersSheet.getFirstRowNum()+1;
+        int lastDependencyRow = containersSheet.getLastRowNum();
+
+        int dependencyStationColIndex = ExcelUtils.findColumnByValue(dependencyHeader, STATION_HEADER_COL_NAME);
+        int dependencyConsigneeColIndex = ExcelUtils.findColumnByValue(dependencyHeader, CONSIGNEE_HEADER_COL_NAME);
+        int dependencyBranchColIndex = ExcelUtils.findColumnByValue(dependencyHeader, BRANCH_HEADER_COL_NAME);
+        int dependencySellTypeColIndex = ExcelUtils.findColumnByValue(dependencyHeader, SELL_TYPE_HEADER_COL_NAME);
+        int dependencyClientColIndex = ExcelUtils.findColumnByValue(dependencyHeader, CLIENT_HEADER_COL_NAME);
+
+        Cell oracleConsigneeCell = oracleCurrentRow.getCell(oracleConsigneeColIndex);
+        Cell oldOracleStationCell = oldOracleCurrentRow.getCell(oldOracleStationColIndex);
+
+        if(oracleConsigneeCell != null && oldOracleStationCell != null) {
+            for(int l = firstDependencyRow; l <= lastDependencyRow; l++) {
+                Row currentDependencyRow = containersSheet.getRow(l);
+                Cell dependencyConsigneeCell = currentDependencyRow.getCell(dependencyConsigneeColIndex);
+                Cell dependencyStationCell = currentDependencyRow.getCell(dependencyStationColIndex);
+
+                String oracleConsigneeValue = oracleConsigneeCell
+                        .getStringCellValue().replaceAll("\"", "");
+                String oldOracleStationValue = oldOracleStationCell.getStringCellValue();
+
+                if(oracleConsigneeValue.equals(dependencyConsigneeCell.getStringCellValue()) &&
+                oldOracleStationValue.equals(dependencyStationCell.getStringCellValue())) {
+                    String branchValue = currentDependencyRow.getCell(dependencyBranchColIndex).getStringCellValue();
+                    String sellTypeValue = currentDependencyRow.getCell(dependencySellTypeColIndex).getStringCellValue();
+                    String clientValue = null;
+                    if(currentDependencyRow.getCell(dependencyClientColIndex) != null &&
+                            currentDependencyRow.getCell(dependencyClientColIndex).getCellType() != CellType.BLANK) {
+                        clientValue = currentDependencyRow.getCell(dependencyClientColIndex).getStringCellValue();
+                    }
+
+                    if(oracleCurrentRow.getCell(oracleBranchColIndex) == null) oracleCurrentRow.createCell(oracleBranchColIndex);
+                    if(oracleCurrentRow.getCell(oracleSellTypeColIndex) == null) oracleCurrentRow.createCell(oracleSellTypeColIndex);
+                    if(oracleCurrentRow.getCell(oracleClientColIndex) == null) oracleCurrentRow.createCell(oracleClientColIndex);
+
+                    Cell oracleBranchCell = oracleCurrentRow.getCell(oracleBranchColIndex);
+                    Cell oracleSellTypeCell = oracleCurrentRow.getCell(oracleSellTypeColIndex);
+                    Cell oracleClientCell = oracleCurrentRow.getCell(oracleClientColIndex);
+
+                    oracleBranchCell.setCellValue(branchValue);
+                    oracleSellTypeCell.setCellValue(sellTypeValue);
+                    if(clientValue != null) oracleClientCell.setCellValue(clientValue);
+                }
+            }
+        }
+
     }
 }
