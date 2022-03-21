@@ -222,6 +222,7 @@ public class MmkBranchSellTypeAndClientSetter {
     public void setExceptions (Row oracleCurrentRow, int oracleOrderColIndex, int oraclePositionColIndex,
                                int oracleBranchColIndex, int oracleSellTypeColIndex, int oracleClientColIndex,
                                XSSFWorkbook dependenciesWorkbook) {
+        //TODO thinking about set default Branch - "Стальэкс" for Station = "ГРАНИТНАЯ" or don't do that
         final String EXCEPTIONS_DEP_SHEET_NAME = "Исключения";
         XSSFSheet exceptionsSheet = dependenciesWorkbook.getSheet(EXCEPTIONS_DEP_SHEET_NAME);
         Row dependencyHeader = exceptionsSheet.getRow(exceptionsSheet.getFirstRowNum());
