@@ -107,6 +107,10 @@ public class FileStorageService {
 
             mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath, fileMmkAcceptLibraryPath, fileMmkDependenciesPath);
             mmkService.addOracleToSummaryFile(fileMmkOraclePath, fileSummaryPath);
+
+            excelService.rewriteSummaryFile(fileSummaryPath);
+
+
         } catch (IOException e) {
             //TODO сделать собственное исключение в package Exceptions (FileStorageException)
             e.printStackTrace();

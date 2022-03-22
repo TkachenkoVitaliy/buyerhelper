@@ -1,15 +1,22 @@
 package com.tkachenko.buyerhelper.service.excel;
 
+import com.tkachenko.buyerhelper.service.mmk.MonthSheets;
 import com.tkachenko.buyerhelper.utils.AcceptMmkProperties;
 import com.tkachenko.buyerhelper.utils.ExcelUtils;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -172,6 +179,95 @@ public class ExcelService {
         }
 
          catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void rewriteSummaryFile(Path fileSummaryPath) {
+        final String ACCEPT_COST_NAME = "Стоимость, руб";
+        final String SHIPPED_COST_NAME = "Стоимость отгр, руб";
+        final String FINAL_COST_NAME = "Итоговая стоимость, тн";
+
+        final String PRICE_NAME = "Цена с НДС, руб/тн";
+        final String ACCEPT_WEIGHT_NAME = "Акцепт, тн";
+        final String SHIPPED_WEIGHT_NAME = "Отгруженно, тн";
+        final String NEW_PRICE_NAME = "Пересмотр, руб/тн";
+
+        final String PROFILE_NAME = "Размеры/профиль";
+
+        try {
+            FileInputStream summaryFileInputStream = new FileInputStream(fileSummaryPath.toString());
+            ZipSecureFile.setMinInflateRatio(0);
+            XSSFWorkbook summaryWorkbook = new XSSFWorkbook(summaryFileInputStream);
+            int numberOfSheets = summaryWorkbook.getNumberOfSheets();
+            XSSFSheet basicSheetForStyle = summaryWorkbook.getSheet(MonthSheets.JANUARY.getSheetName());
+            XSSFRow basicHeaderForStyle = basicSheetForStyle.getRow(basicSheetForStyle.getFirstRowNum());
+            CellStyle headerStyle = basicHeaderForStyle.getRowStyle();
+            XSSFRow basicRowForStyle = basicSheetForStyle.getRow(basicSheetForStyle.getFirstRowNum() + 1);
+            CellStyle rowStyle = basicRowForStyle.getRowStyle();
+
+            for (int i = 0; i < numberOfSheets; i++) {
+                XSSFSheet currentSheet = summaryWorkbook.getSheetAt(i);
+                if (MonthSheets.findBySheetName(currentSheet.getSheetName()) != null) {
+                    int headerRowIndex = currentSheet.getFirstRowNum();
+                    int firstRowIndex = headerRowIndex + 1;
+                    int lastRowIndex = currentSheet.getLastRowNum();
+
+                    XSSFRow headerRow = currentSheet.getRow(headerRowIndex);
+                    if (MonthSheets.findBySheetName(currentSheet.getSheetName())!=(MonthSheets.JANUARY))
+                        headerRow.setRowStyle(headerStyle);
+
+                    int profileNameColIndex = ExcelUtils.findColumnByValue(headerRow, PROFILE_NAME);
+                    int acceptCostColIndex = ExcelUtils.findColumnByValue(headerRow,ACCEPT_COST_NAME);
+                    int shippedCostColIndex = ExcelUtils.findColumnByValue(headerRow, SHIPPED_COST_NAME);
+                    int finalCostColIndex = ExcelUtils.findColumnByValue(headerRow, FINAL_COST_NAME);
+                    int priceColIndex = ExcelUtils.findColumnByValue(headerRow, PRICE_NAME);;
+                    int acceptWeightColIndex = ExcelUtils.findColumnByValue(headerRow, ACCEPT_WEIGHT_NAME);
+                    int shippedWeightColIndex = ExcelUtils.findColumnByValue(headerRow, SHIPPED_WEIGHT_NAME);
+                    int newPriceColIndex = ExcelUtils.findColumnByValue(headerRow, NEW_PRICE_NAME);
+
+
+
+                    for(int j = firstRowIndex; j <= lastRowIndex; j++) {
+                        XSSFRow currentRow = currentSheet.getRow(j);
+                        XSSFCell profileCell = currentRow.getCell(profileNameColIndex);
+                        if(profileCell != null && profileCell.getCellType() != CellType.BLANK) {
+                            String profileValue = profileCell.getStringCellValue();
+                            profileCell.setCellValue(profileValue.replaceAll("x", "*"));
+                        }
+                        String priceColForFormula = ExcelUtils.getExcelColAddress(priceColIndex);
+                        String acceptWeightColForFormula = ExcelUtils.getExcelColAddress(acceptWeightColIndex);
+                        String shippedWeightColForFormula = ExcelUtils.getExcelColAddress(shippedWeightColIndex);
+                        String newPriceColForFormula = ExcelUtils.getExcelColAddress(newPriceColIndex);
+
+                        int rowNumForFormula = j + 1;
+                        Cell acceptCostCell = currentRow.createCell(acceptCostColIndex, CellType.FORMULA);
+                        Cell shippedCostCell = currentRow.createCell(shippedCostColIndex, CellType.FORMULA);
+                        Cell finalCostCell = currentRow.createCell(finalCostColIndex, CellType.FORMULA);
+
+                        acceptCostCell.setCellFormula(priceColForFormula + rowNumForFormula + "*"
+                                + acceptWeightColForFormula + rowNumForFormula);
+                        shippedCostCell.setCellFormula(priceColForFormula + rowNumForFormula + "*"
+                                + shippedWeightColForFormula + rowNumForFormula);
+                        finalCostCell.setCellFormula("IF(" +  newPriceColForFormula + rowNumForFormula + "=0,"
+                                + priceColForFormula + rowNumForFormula + "*" + shippedWeightColForFormula + rowNumForFormula
+                                + "," + newPriceColForFormula + rowNumForFormula + "*"
+                                + shippedWeightColForFormula + rowNumForFormula + ")");
+
+                        System.out.println("set rowStyle");
+                        currentRow.setRowStyle(rowStyle);
+                    }
+
+                }
+            }
+
+            FileOutputStream summaryFileOutputStream = new FileOutputStream(fileSummaryPath.toString());
+            summaryWorkbook.write(summaryFileOutputStream);
+            summaryWorkbook.close();
+            summaryFileOutputStream.flush();
+            summaryFileOutputStream.close();
+            summaryFileInputStream.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
