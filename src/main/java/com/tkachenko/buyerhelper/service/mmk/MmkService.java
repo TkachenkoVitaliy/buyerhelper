@@ -1,11 +1,9 @@
 package com.tkachenko.buyerhelper.service.mmk;
 
 import com.tkachenko.buyerhelper.utils.ExcelUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,9 @@ import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MmkService {
@@ -65,7 +65,7 @@ public class MmkService {
                 }
                 if(cellFrom.getStringCellValue().equals(yearHeader)) {
                     yearColIndex = i + 1;
-                };
+                }
             }
 
             int firstParseRowMmkIndex = mmkOracleSheet.getFirstRowNum()+1;
@@ -138,30 +138,64 @@ public class MmkService {
 
             FileInputStream oracleFileInputStream = new FileInputStream(fileMmkOraclePath.toString());
             XSSFWorkbook oracleWorkbook = new XSSFWorkbook(oracleFileInputStream);
-            XSSFSheet newOracleSheet = oracleWorkbook.getSheet("newSheetName");
-            Row newOracleHeader = newOracleSheet.getRow(newOracleSheet.getFirstRowNum());
+            XSSFSheet newOracleSheet = oracleWorkbook.getSheet(newSheetName);
+            XSSFRow newOracleHeader = newOracleSheet.getRow(newOracleSheet.getFirstRowNum());
             int newOracleAcceptMonthColIndex = ExcelUtils.findColumnByValue(newOracleHeader, ORACLE_ACCEPT_MONTH_COL_NAME);
             int oracleFirstRow = newOracleSheet.getFirstRowNum() + 1;
             int oracleLastRow = newOracleSheet.getLastRowNum();
 
-            List<MonthSheets> foundMonths = new ArrayList<>();
+            Map<MonthSheets, XSSFSheet> mapMonthSheetsXSSFSheet = new HashMap<>();
+            CellCopyPolicy defaultCopyPolicy = new CellCopyPolicy();
 
             for (int i = 0; i < numberOfSheetsSummaryWorkbook; i++) {
                 XSSFSheet currentSummarySheet = summaryWorkbook.getSheetAt(i);
                 String currentSummarySheetName = currentSummarySheet.getSheetName();
                 if(MonthSheets.findBySheetName(currentSummarySheetName) != null) {
                     MonthSheets currentSheetMonth = MonthSheets.findBySheetName(currentSummarySheetName);
-                    foundMonths.add(currentSheetMonth);
+                    mapMonthSheetsXSSFSheet.put(currentSheetMonth, currentSummarySheet);
+                }
+            }
 
-                    for(int j = oracleFirstRow; j <= oracleLastRow; j++) {
-                        Row currentOracleRow = newOracleSheet.getRow(j);
-                        
+            for(int j = oracleFirstRow; j <= oracleLastRow; j++) {
+                XSSFRow currentOracleRow = newOracleSheet.getRow(j);
+                XSSFCell oracleAcceptMonthCell = currentOracleRow.getCell(newOracleAcceptMonthColIndex);
+                if (oracleAcceptMonthCell != null && oracleAcceptMonthCell.getCellType() != CellType.BLANK) {
+                    int oracleAcceptMonthValue = (int) oracleAcceptMonthCell.getNumericCellValue();
+                    MonthSheets oracleMonthSheet = MonthSheets.findByIntValue(oracleAcceptMonthValue);
+                    if (mapMonthSheetsXSSFSheet.containsKey(oracleMonthSheet)) {
+                        XSSFSheet targetSheet = mapMonthSheetsXSSFSheet.get(oracleMonthSheet);
+                        int summaryDestinationRowIndex = targetSheet.getLastRowNum() + 1;
+                        XSSFRow summaryDestinationRow = targetSheet.createRow(summaryDestinationRowIndex);
+                        ExcelUtils.copyXSSFRow(currentOracleRow, summaryDestinationRow);
+                    } else {
+                        String newSheetName = oracleMonthSheet.getSheetName();
+                        summaryWorkbook.createSheet(newSheetName);
+                        XSSFSheet targetSheet = summaryWorkbook.getSheet(newSheetName);
+                        mapMonthSheetsXSSFSheet.put(oracleMonthSheet, targetSheet);
+                        int summaryDestinationHeaderIndex = targetSheet.getLastRowNum() + 1;
+                        XSSFRow summaryDestinationHeader = targetSheet.createRow(summaryDestinationHeaderIndex);
+                        XSSFRow summaryDestinationRow = targetSheet.createRow(summaryDestinationHeaderIndex+1);
+                        ExcelUtils.copyXSSFRow(newOracleHeader, summaryDestinationHeader);
+                        ExcelUtils.copyXSSFRow(currentOracleRow, summaryDestinationRow);
                     }
                 }
             }
 
-        } catch (Exception e) {
+            FileOutputStream summaryFileOutputStream = new FileOutputStream(fileSummaryPath.toString());
+            summaryWorkbook.write(summaryFileOutputStream);
+            summaryWorkbook.close();
+
+            summaryFileOutputStream.flush();
+            summaryFileOutputStream.close();
+
+            summaryFileInputStream.close();
+            oracleFileInputStream.close();
+        }
+
+        catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
+

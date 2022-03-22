@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.CellCopyPolicy;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelUtils {
@@ -180,5 +181,16 @@ public class ExcelUtils {
             result = ""+prefix+postfix;
         }
         return result;
+    }
+
+    public static void copyXSSFRow (XSSFRow sourceRow, XSSFRow destinationRow) {
+        CellCopyPolicy defaultCopyPolicy = new CellCopyPolicy();
+
+        for(Cell sourceCell : sourceRow) {
+            XSSFCell sourceXSSFCell = (XSSFCell) sourceCell;
+            int colIndex = sourceXSSFCell.getColumnIndex();
+            XSSFCell destinationXSSFCell = destinationRow.createCell(colIndex);
+            destinationXSSFCell.copyCellFrom(sourceXSSFCell, defaultCopyPolicy);
+        }
     }
 }
