@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.CellCopyPolicy;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -191,6 +192,34 @@ public class ExcelUtils {
             int colIndex = sourceXSSFCell.getColumnIndex();
             XSSFCell destinationXSSFCell = destinationRow.createCell(colIndex);
             destinationXSSFCell.copyCellFrom(sourceXSSFCell, defaultCopyPolicy);
+        }
+    }
+
+    public static void copyRowStyle (XSSFRow sourceRow, XSSFRow destinationRow) {
+        int columnsNumber = sourceRow.getLastCellNum();
+        for (int i = 0; i < columnsNumber; i++) {
+            XSSFCell sourceCell = sourceRow.getCell(i);
+            XSSFCellStyle sourceCellStyle = null;
+            if (sourceCell != null) sourceCellStyle = sourceCell.getCellStyle();
+            if (sourceCellStyle != null) {
+                XSSFCell destinationCell = destinationRow.getCell(i);
+                if (destinationCell == null) destinationCell = destinationRow.createCell(i);
+                destinationCell.setCellStyle(sourceCellStyle);
+            }
+        }
+    }
+
+    public static void copyRowStyleWithoutBlank (XSSFRow sourceRow, XSSFRow destinationRow) {
+        int columnsNumber = sourceRow.getLastCellNum();
+        XSSFCellStyle sourceCellStyle = null;
+        for (int i = 0; i < columnsNumber; i++) {
+            XSSFCell sourceCell = sourceRow.getCell(i);
+            if (sourceCell != null && sourceCell.getCellStyle() != null) sourceCellStyle = sourceCell.getCellStyle();
+            if (sourceCellStyle != null) {
+                XSSFCell destinationCell = destinationRow.getCell(i);
+                if (destinationCell == null) destinationCell = destinationRow.createCell(i);
+                destinationCell.setCellStyle(sourceCellStyle);
+            }
         }
     }
 }

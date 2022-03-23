@@ -8,10 +8,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -202,9 +199,9 @@ public class ExcelService {
             int numberOfSheets = summaryWorkbook.getNumberOfSheets();
             XSSFSheet basicSheetForStyle = summaryWorkbook.getSheet(MonthSheets.JANUARY.getSheetName());
             XSSFRow basicHeaderForStyle = basicSheetForStyle.getRow(basicSheetForStyle.getFirstRowNum());
-            CellStyle headerStyle = basicHeaderForStyle.getRowStyle();
+            //CellStyle headerStyle = basicHeaderForStyle.getRowStyle();
             XSSFRow basicRowForStyle = basicSheetForStyle.getRow(basicSheetForStyle.getFirstRowNum() + 1);
-            CellStyle rowStyle = basicRowForStyle.getRowStyle();
+            //CellStyle rowStyle = basicRowForStyle.getRowStyle();
 
             for (int i = 0; i < numberOfSheets; i++) {
                 XSSFSheet currentSheet = summaryWorkbook.getSheetAt(i);
@@ -215,7 +212,7 @@ public class ExcelService {
 
                     XSSFRow headerRow = currentSheet.getRow(headerRowIndex);
                     if (MonthSheets.findBySheetName(currentSheet.getSheetName())!=(MonthSheets.JANUARY))
-                        headerRow.setRowStyle(headerStyle);
+                        ExcelUtils.copyRowStyleWithoutBlank(basicHeaderForStyle, headerRow);
 
                     int profileNameColIndex = ExcelUtils.findColumnByValue(headerRow, PROFILE_NAME);
                     int acceptCostColIndex = ExcelUtils.findColumnByValue(headerRow,ACCEPT_COST_NAME);
@@ -226,7 +223,7 @@ public class ExcelService {
                     int shippedWeightColIndex = ExcelUtils.findColumnByValue(headerRow, SHIPPED_WEIGHT_NAME);
                     int newPriceColIndex = ExcelUtils.findColumnByValue(headerRow, NEW_PRICE_NAME);
 
-
+                    XSSFCellStyle priceCellStyle = null;
 
                     for(int j = firstRowIndex; j <= lastRowIndex; j++) {
                         XSSFRow currentRow = currentSheet.getRow(j);
@@ -241,9 +238,12 @@ public class ExcelService {
                         String newPriceColForFormula = ExcelUtils.getExcelColAddress(newPriceColIndex);
 
                         int rowNumForFormula = j + 1;
-                        Cell acceptCostCell = currentRow.createCell(acceptCostColIndex, CellType.FORMULA);
-                        Cell shippedCostCell = currentRow.createCell(shippedCostColIndex, CellType.FORMULA);
-                        Cell finalCostCell = currentRow.createCell(finalCostColIndex, CellType.FORMULA);
+                        XSSFCell priceCell = currentRow.getCell(priceColIndex);
+                        if(priceCell.getCellStyle() != null) priceCellStyle = priceCell.getCellStyle();
+
+                        XSSFCell acceptCostCell = currentRow.createCell(acceptCostColIndex, CellType.FORMULA);
+                        XSSFCell shippedCostCell = currentRow.createCell(shippedCostColIndex, CellType.FORMULA);
+                        XSSFCell finalCostCell = currentRow.createCell(finalCostColIndex, CellType.FORMULA);
 
                         acceptCostCell.setCellFormula(priceColForFormula + rowNumForFormula + "*"
                                 + acceptWeightColForFormula + rowNumForFormula);
@@ -254,8 +254,13 @@ public class ExcelService {
                                 + "," + newPriceColForFormula + rowNumForFormula + "*"
                                 + shippedWeightColForFormula + rowNumForFormula + ")");
 
-                        System.out.println("set rowStyle");
-                        currentRow.setRowStyle(rowStyle);
+                        if(priceCellStyle != null) {
+                            acceptCostCell.setCellStyle(priceCellStyle);
+                            shippedCostCell.setCellStyle(priceCellStyle);
+                            finalCostCell.setCellStyle(priceCellStyle);
+                        }
+
+                        ExcelUtils.copyRowStyleWithoutBlank(basicRowForStyle, currentRow);
                     }
 
                 }
