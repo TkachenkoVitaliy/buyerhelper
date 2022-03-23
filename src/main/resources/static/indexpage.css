@@ -1,0 +1,17 @@
+.uploadForm {
+    margin-bottom: 40px;
+    border: blue 5px solid;
+    width: 353px;
+}
+
+.sendButton {
+    width: 338px;
+    margin: 4px 7px;
+    color: white;
+    background-color: black;
+}
+
+.uploadLabel {
+    border: darkgrey solid 1px;
+    margin: 4px 7px;
+}

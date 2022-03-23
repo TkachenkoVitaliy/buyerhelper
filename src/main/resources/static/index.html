@@ -3,48 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>stageOne</title>
+    <link rel="stylesheet" href="indexpage.css">
 </head>
 <body>
 <h2>
     stageOneBegin
 </h2>
 
-<form action="/uploadFiles" method="post" enctype="multipart/form-data">
+<form action="/uploadFiles" method="post" enctype="multipart/form-data" class="uploadForm">
 
-    <div>
+    <div class="uploadLabel">
         <label>Файл ММК (oracle)</label>
         <input type="file" accept=".xlsx, .xls" id="mmkOracle" name="mmkOracle" required>
     </div>
 
-    <div>
+    <div class="uploadLabel">
         <label>Зависимости ММК</label>
         <input type="file" accept=".xlsx, .xls" id="mmkDependencies" name="mmkDependencies" required>
     </div>
 
-    <div>
+    <div class="uploadLabel">
         <label>Файл Прочие заводы</label>
         <input type="file" accept=".xlsx, .xls" id="otherFactory" name="otherFactory" required>
     </div>
     <div>
-        <button>SEND</button>
+        <button class="sendButton">SEND</button>
     </div>
 
 </form>
 
-<div> </div>
-<div> </div>
-<div> </div>
-<img src="https://www.codewars.com/users/TkachenkoVitaliy/badges/large">
 
-<form action="/uploadAccept" method="post" enctype="multipart/form-data">
-    <div>
+<form action="/uploadAccept" method="post" enctype="multipart/form-data" class="uploadForm">
+    <div class="uploadLabel">
         <label>Акцепт ММК</label>
         <input type="file" accept=".xlsx, .xls" id="mmkAccept" name="mmkAccept" required>
     </div>
 
     <div>
-        <button>SEND</button>
+        <button class="sendButton">SEND</button>
     </div>
+</form>
+
+<form action = "/downloadZipFile" method="get" class="uploadForm">
+    <button><img src="downloadbutton.png"></button>
 </form>
 
 

@@ -22,5 +22,11 @@ public class FileDBService {
         fileEntityRepository.save(fileEntity);
     }
 
-
+    public void setPreviousIsActualFalse(String storageFileName) {
+        FileEntity previousFile = fileEntityRepository.findByStorageFileNameAndIsActual(storageFileName, true);
+        if(previousFile != null) {
+            previousFile.setActual(false);
+            fileEntityRepository.save(previousFile);
+        }
+    }
 }

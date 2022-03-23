@@ -89,18 +89,22 @@ public class FileStorageService {
 
         try {
             Files.copy(fileMmkOracle.getInputStream(), fileMmkOraclePath, StandardCopyOption.REPLACE_EXISTING);
+            fileDBService.setPreviousIsActualFalse(fileMmkOracleName);
             fileDBService.save(originalFileMmkOracleName, fileMmkOracleName,
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileMmkDependencies.getInputStream(), fileMmkDependenciesPath, StandardCopyOption.REPLACE_EXISTING);
+            fileDBService.setPreviousIsActualFalse(fileMmkDependenciesName);
             fileDBService.save(originalFileMmkDependenciesName, fileMmkDependenciesName,
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileOtherFactory.getInputStream(), fileOtherFactoryPath, StandardCopyOption.REPLACE_EXISTING);
+            fileDBService.setPreviousIsActualFalse(fileOtherFactoryName);
             fileDBService.save(originalFileOtherFactoryName, fileOtherFactoryName,
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
 
             Files.copy(fileOtherFactory.getInputStream(), fileSummaryPath, StandardCopyOption.REPLACE_EXISTING);
+            fileDBService.setPreviousIsActualFalse(fileSummaryName);
             fileDBService.save("CREATED", fileSummaryName,
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
             excelService.refactorSummaryFile(fileSummaryPath);

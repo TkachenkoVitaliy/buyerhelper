@@ -2,6 +2,7 @@ package com.tkachenko.buyerhelper.controller;
 
 import com.tkachenko.buyerhelper.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +28,15 @@ public class FileStorageController {
 
         fileStorageService.storeFiles(mmkAccept);
         return "ACCEPT UPLOADED";
+    }
+
+    @GetMapping("/downloadSummaryFile")
+    public String downloadSummaryFile() {
+        return "TEST";
+    }
+
+    @GetMapping("/downloadZipFile")
+    public String downloadZipFile() {
+        return "TEST";
     }
 }
