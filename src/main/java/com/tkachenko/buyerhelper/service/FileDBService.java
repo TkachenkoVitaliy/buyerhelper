@@ -29,4 +29,9 @@ public class FileDBService {
             fileEntityRepository.save(previousFile);
         }
     }
+
+    public FileEntity getActualFileByStorageName (String storageFileName) {
+        FileEntity actualFile = fileEntityRepository.findByStorageFileNameAndIsActual(storageFileName, true);
+        return actualFile;
+    }
 }

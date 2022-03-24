@@ -103,4 +103,18 @@ public class FileEntity {
     public void setActual(boolean actual) {
         isActual = actual;
     }
+
+    @Override
+    public String toString() {
+        return "FileEntity{" +
+                "id=" + id +
+                ", originalFileName='" + originalFileName + '\'' +
+                ", storageFileName='" + storageFileName + '\'' +
+                ", year='" + year + '\'' +
+                ", month='" + month + '\'' +
+                ", day='" + day + '\'' +
+                ", time='" + time + '\'' +
+                ", isActual=" + isActual +
+                '}';
+    }
 }
