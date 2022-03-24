@@ -21,16 +21,18 @@ public class FileDownloadService {
     private final FileDBService fileDBService;
     private final ExcelService excelService;
     private final MmkService mmkService;
+    private final SummarySplitter summarySplitter;
 
     private final String SUMMARY_NAME = "SUMMARY.xlsx";
 
     @Autowired
     public FileDownloadService(FileStorageProperties fileStorageProperties, FileDBService fileDBService,
-                               ExcelService excelService, MmkService mmkService) {
+                               ExcelService excelService, MmkService mmkService, SummarySplitter summarySplitter) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         this.fileDBService = fileDBService;
         this.excelService = excelService;
         this.mmkService = mmkService;
+        this.summarySplitter = summarySplitter;
     }
 
     public Resource loadSummaryFileAsResource() {
@@ -47,5 +49,9 @@ public class FileDownloadService {
         } catch (MalformedURLException ex) {
             throw new RuntimeException("File not found");
         }
+    }
+
+    public void loadBranchesZipFileAsResource() {
+        summarySplitter.splitFiles();
     }
 }

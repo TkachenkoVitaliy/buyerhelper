@@ -60,6 +60,7 @@ public class FileStorageController {
 
     @GetMapping("/downloadZipFile")
     public String downloadZipFile() {
+        fileDownloadService.loadBranchesZipFileAsResource();
         return "TEST";
     }
 }
