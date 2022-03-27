@@ -50,11 +50,14 @@ public class SummarySplitter {
     private final static String[] citiesArray = {KRASNODAR, ROSTOV, MOSCOW, NOVGOROD, KAZAN, NAB_CHELNY, IZHEVSK, PERM,
     UFA, CHELYABINSK, YEKATERINBURG, TUMEN, OMSK, NOVOSIBIRSK, NOVOKUZNETSK};
 
-    public void splitFiles() {
+    public ArrayList<String> splitFiles() {
+        ArrayList <String> branchFilesCollection = new ArrayList<>();
+
         Path newSummaryFilePath = copySummaryFile();
 
         for (String cityName : citiesArray) {
             Path targetFilePath = splitNewSummaryFile(newSummaryFilePath, cityName);
+            branchFilesCollection.add(targetFilePath.toString());
             deleteUnnecessaryBranches(targetFilePath, cityName);
         }
         try {
@@ -62,6 +65,8 @@ public class SummarySplitter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return branchFilesCollection;
     }
 
     private Path copySummaryFile() {

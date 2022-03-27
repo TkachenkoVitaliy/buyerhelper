@@ -59,8 +59,24 @@ public class FileStorageController {
     }
 
     @GetMapping("/downloadZipFile")
-    public String downloadZipFile() {
-        fileDownloadService.loadBranchesZipFileAsResource();
-        return "TEST";
+    public ResponseEntity<Resource> downloadZipFile(HttpServletRequest request) {
+        Resource resource = fileDownloadService.loadBranchesZipFileAsResource();
+        String fileName = resource.getFilename();
+        System.out.println("FILE NAME - " + fileName);
+        String headerValues = "attachment; filename=" + fileName; // + ".zip";
+
+        String contentType = null;
+        try {
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException ex) {
+            System.out.println("Could not determine file type");
+        }
+
+        if (contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerValues).body(resource);
     }
 }
