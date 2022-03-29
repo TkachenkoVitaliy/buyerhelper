@@ -34,7 +34,7 @@ public class NicheProfileParserFromOracle {
 
         String productTypeValue = newRow.getCell(newProductTypeIndex).getStringCellValue();
         String additionalReq = oldRow.getCell(oldAdditionalReqIndex).getStringCellValue();
-        if(additionalReq=="") return;
+        if(additionalReq.equals("")) return;
 
         Cell targetCell = newRow.getCell(newProfileIndex);
         if(targetCell == null) newRow.createCell(newProfileIndex);

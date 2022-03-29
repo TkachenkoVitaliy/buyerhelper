@@ -107,7 +107,7 @@ public class FileStorageService {
             fileDBService.setPreviousIsActualFalse(fileSummaryName);
             fileDBService.save("CREATED", fileSummaryName,
                     yearFolderName, monthFolderName, dayFolderName, timeFolderName, true);
-            excelService.refactorSummaryFile(fileSummaryPath);
+            excelService.deleteUnnecessarySummarySheets(fileSummaryPath);
 
             mmkService.parseMmkToOtherFactoryFormat(fileMmkOraclePath, fileMmkAcceptLibraryPath, fileMmkDependenciesPath);
             mmkService.addOracleToSummaryFile(fileMmkOraclePath, fileSummaryPath);

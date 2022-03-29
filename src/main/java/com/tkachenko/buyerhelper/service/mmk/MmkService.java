@@ -35,12 +35,6 @@ public class MmkService {
     private int factoryColIndex = -1;
     private int yearColIndex = -1;
 
-//    @Autowired
-//    public MmkService(FileStorageProperties fileStorageProperties) {
-//        this.mmkToOtherFactorySettings = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize()
-//                .resolve(settingsFileName);
-//    }
-
     public void parseMmkToOtherFactoryFormat(Path fileMmkOraclePath, Path fileMmkAcceptLibraryPath,
                                              Path fileMmkDependenciesPath) {
         try {

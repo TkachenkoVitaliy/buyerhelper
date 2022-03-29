@@ -2,8 +2,6 @@ package com.tkachenko.buyerhelper.service;
 
 import com.tkachenko.buyerhelper.entity.FileEntity;
 import com.tkachenko.buyerhelper.property.FileStorageProperties;
-import com.tkachenko.buyerhelper.service.excel.ExcelService;
-import com.tkachenko.buyerhelper.service.mmk.MmkService;
 import com.tkachenko.buyerhelper.utils.FileUtils;
 import com.tkachenko.buyerhelper.utils.ZipUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +22,6 @@ public class FileDownloadService {
 
     private final Path fileStorageLocation;
     private final FileDBService fileDBService;
-    private final ExcelService excelService;
-    private final MmkService mmkService;
     private final SummarySplitter summarySplitter;
 
     private final String SUMMARY_NAME = "SUMMARY.xlsx";
@@ -34,11 +30,9 @@ public class FileDownloadService {
 
     @Autowired
     public FileDownloadService(FileStorageProperties fileStorageProperties, FileDBService fileDBService,
-                               ExcelService excelService, MmkService mmkService, SummarySplitter summarySplitter) {
+                               SummarySplitter summarySplitter) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
         this.fileDBService = fileDBService;
-        this.excelService = excelService;
-        this.mmkService = mmkService;
         this.summarySplitter = summarySplitter;
     }
 
@@ -50,7 +44,7 @@ public class FileDownloadService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + actualSummaryFilePath.toString());
+                throw new RuntimeException("File not found " + actualSummaryFilePath);
             }
 
         } catch (MalformedURLException ex) {
@@ -80,7 +74,7 @@ public class FileDownloadService {
             if(resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + zippedFilePath.toString());
+                throw new RuntimeException("File not found " + zippedFilePath);
             }
         } catch (IOException ex) {
             throw new RuntimeException("File not found");

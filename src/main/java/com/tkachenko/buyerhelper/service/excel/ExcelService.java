@@ -5,7 +5,6 @@ import com.tkachenko.buyerhelper.utils.AcceptMmkProperties;
 import com.tkachenko.buyerhelper.utils.ExcelUtils;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.*;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -28,7 +26,7 @@ public class ExcelService {
         return acceptLibraryName;
     }
 
-    public void refactorSummaryFile(Path fileSummaryPath) {
+    public void deleteUnnecessarySummarySheets(Path fileSummaryPath) {
         String stringFileSummaryPath = fileSummaryPath.toString();
 
         try {

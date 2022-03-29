@@ -36,11 +36,7 @@ public class ExcelUtils {
         }
         cellFirst = rowFirst.getCell(secondCol);
         cellSecond = rowSecond.getCell(secondCol);
-        if (cellFirst.getNumericCellValue() != cellSecond.getNumericCellValue() ) {
-            return false;
-        } else {
-            return true;
-        }
+        return cellFirst.getNumericCellValue() == cellSecond.getNumericCellValue();
     }
 
     public static boolean isSamePosition (Row rowFirst, int firstRowOrderIndex, int firstRowPosIndex,
@@ -60,11 +56,7 @@ public class ExcelUtils {
         }
         cellFirst = rowFirst.getCell(firstRowPosIndex);
         cellSecond = rowSecond.getCell(secondRowPosIndex);
-        if (cellFirst.getNumericCellValue() != cellSecond.getNumericCellValue() ) {
-            return false;
-        } else {
-            return true;
-        }
+        return cellFirst.getNumericCellValue() == cellSecond.getNumericCellValue();
     }
 
     public static boolean isRowEmpty (Row row) {

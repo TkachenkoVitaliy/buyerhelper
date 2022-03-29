@@ -8,8 +8,6 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-import javax.xml.crypto.Data;
-
 
 public class NicheProfileParserFromAccept {
     private final static String ANGLES = "Уголок г/к";
